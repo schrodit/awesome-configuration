@@ -5,6 +5,14 @@
 
 --]]
 
+--[[
+    Configurations
+--]]
+
+local theme = {}
+theme.font = "Roboto 11"
+
+
 -- {{{ Required libraries
 
 -- If LuaRocks is installed, make sure that packages installed through it are
@@ -159,6 +167,8 @@ awful.util.tasklist_buttons = mytable.join(
 )
 
 beautiful.init(string.format("%s/.config/awesome/theme/theme.lua", os.getenv("HOME")))
+local current_theme = beautiful.get()
+current_theme.font = theme.font
 
 -- }}}
 

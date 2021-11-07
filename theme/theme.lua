@@ -24,9 +24,8 @@ local math, string, os = math, string, os
 local my_table = awful.util.table or gears.table -- 4.{0,1} compatibility
 
 local theme                                     = {}
-theme.dir                                       = os.getenv("HOME") .. "/.config/awesome/themes/schrodit"
+theme.dir                                       = os.getenv("HOME") .. "/.config/awesome/theme"
 theme.wallpaper                                 = theme.dir .. "/dunes.png"
-theme.font                                      = "Roboto 11"
 theme.fg_normal                                 = "#FEFEFE"
 theme.fg_focus                                  = "#32D6FF"
 theme.fg_urgent                                 = "#C83F11"
