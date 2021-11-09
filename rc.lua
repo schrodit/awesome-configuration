@@ -77,7 +77,7 @@ local function run_once(cmd_arr)
     end
 end
 
-run_once({ "urxvtd", "unclutter -root" }) -- comma-separated entries
+run_once({ "urxvtd", "unclutter -root", "$HOME/.config/awesome/autorun.sh" }) -- comma-separated entries
 
 -- This function implements the XDG autostart specification
 --[[
