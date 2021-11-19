@@ -321,11 +321,11 @@ globalkeys = mytable.join(
               {description = "show main menu", group = "awesome"}),
     
     -- Rofi App Launcher
-    awful.key({ "Control" }, "space",  function () awful.spawn("rofi -show drun -show-icons -icon-theme Boston") end,
+    awful.key({ "Control" }, "space",  function () awful.spawn("rofi -show drun -show-icons -icon-theme Boston -theme solarized") end,
               {description = "open application launcher", group = "awesome"}),
     
     -- Rofi Window change
-    awful.key({ altkey }, "Tab", function () awful.spawn("rofi -show window") end,
+    awful.key({ altkey }, "Tab", function () awful.spawn("rofi -show window -theme solarized") end,
               {description = "open window switcher", group = "awesome"}),
 
     -- Layout manipulation
