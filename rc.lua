@@ -319,6 +319,14 @@ globalkeys = mytable.join(
     -- Menu
     awful.key({ modkey,           }, "w", function () mymainmenu:show() end,
               {description = "show main menu", group = "awesome"}),
+    
+    -- Rofi App Launcher
+    awful.key({ "Control" }, "space",  function () awful.spawn("rofi -show drun") end,
+              {description = "open application launcher", group = "awesome"}),
+    
+    -- Rofi Window change
+    awful.key({ altkey }, "Tab", function () awful.spawn("rofi -show window") end,
+              {description = "open window switcher", group = "awesome"}),
 
     -- Layout manipulation
     awful.key({ modkey, "Shift"   }, "j", function () awful.client.swap.byidx(  1)    end,

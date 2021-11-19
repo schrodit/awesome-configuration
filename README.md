@@ -16,6 +16,7 @@ Some modules require additional installed software.
 
 Arch Installation for additonal packages:
 ```
+pacman -S rofi # application launcher and window switcher
 pacman -S mpd # music player daemon
 sudo systemctl enable mpd.service
 sudo systemctl start mpd.service
