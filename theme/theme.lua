@@ -126,25 +126,6 @@ theme.titlebar_minimize_button_focus_press      = theme.dir .. "/icons/sweet-ass
 local markup = lain.util.markup
 local separators = lain.util.separators
 
--- Binary clock
-local binclock = require("themes.powerarrow.binclock"){
-    height = dpi(32),
-    show_seconds = true,
-    color_active = theme.fg_normal,
-    color_inactive = theme.bg_focus
-}
-
--- Calendar
-theme.cal = lain.widget.cal({
-    --cal = "cal --color=always",
-    attach_to = { binclock.widget },
-    notification_preset = {
-        font = "Terminus 10",
-        fg   = theme.fg_normal,
-        bg   = theme.bg_normal
-    }
-})
-
 -- Taskwarrior
 local task = wibox.widget.imagebox(theme.widget_task)
 lain.widget.contrib.task.attach(task, {

@@ -253,8 +253,8 @@ globalkeys = mytable.join(
               {description = "take a screenshot", group = "hotkeys"}),
 
     -- X screen locker
-    awful.key({ altkey, "Control" }, "l", function () os.execute(scrlocker) end,
-              {description = "lock screen", group = "hotkeys"}),
+    -- awful.key({ altkey, "Control" }, "l", function () os.execute(scrlocker) end,
+    --           {description = "lock screen", group = "hotkeys"}),
     -- X Randr multi monitor switch
     awful.key({ altkey, "Control" }, "p", function() xrandr.xrandr() end,
               {description= "Switch Multi monitor setup" }),
@@ -327,6 +327,10 @@ globalkeys = mytable.join(
     -- Rofi Window change
     awful.key({ altkey }, "Tab", function () awful.spawn("rofi -show window -theme solarized") end,
               {description = "open window switcher", group = "awesome"}),
+    
+    -- Lock screen
+    awful.key({ altkey, "Control" },  "l", function () awful.spawn("dm-tool lock") end,
+              {description = "lockscreen", group = "awesome"}),
 
     -- Layout manipulation
     awful.key({ modkey, "Shift"   }, "j", function () awful.client.swap.byidx(  1)    end,
