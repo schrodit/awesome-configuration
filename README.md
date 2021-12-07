@@ -31,6 +31,7 @@ curl -L $candy_icons_download_url | tar -C $HOME/.icons/candy-icons --strip-comp
 ```
 
 
-- Sweet-Icons ([theme/icons/sweet-assets](./theme/icons/sweet-asset)) from https://github.com/EliverLara/Sweet 
-- Wallpaper ([theme/dune.png](./theme/dune.png)) from https://www.pixel4k.com/dune-minimalist-4k-61834.html
-- xrandr awesome vm script [xrandr.lua](xrandr.lua) from https://awesomewm.org/recipes/xrandr.lua
+- Sweet-Icons ([awesome/theme/icons/sweet-assets](./awesome/theme/icons/sweet-asset)) from https://github.com/EliverLara/Sweet 
+- Wallpaper ([awesome/theme/dune.png](./awesome/theme/dune.png)) from https://www.pixel4k.com/dune-minimalist-4k-61834.html
+- Lightdm Wallpaper ([lightdm/sunset.jpg](./lightdm/sunset.jpg)) from https://www.wallpapertip.com/wpic/iiihTo_flat-design-landscape-sunset/
+- xrandr awesome vm script [awesome/xrandr.lua](./awesome/xrandr.lua) from https://awesomewm.org/recipes/xrandr.lua

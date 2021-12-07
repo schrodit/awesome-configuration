@@ -6,6 +6,7 @@ set -e
 
 THEME_DIR="$(realpath $(dirname "$0"))"
 AWESOME_DIR="$HOME/.config/awesome"
+mkdir -p "$AWESOME_DIR"
 
 links=( "theme" "awesome-wm-widgets" "freedesktop" "lain" "xrandr.lua" "rc.lua" )
 

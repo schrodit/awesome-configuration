@@ -321,7 +321,7 @@ globalkeys = mytable.join(
               {description = "show main menu", group = "awesome"}),
     
     -- Rofi App Launcher
-    awful.key({ "Control" }, "space",  function () awful.spawn("rofi -show drun -show-icons -icon-theme Boston -theme solarized") end,
+    awful.key({ modkey }, "space",  function () awful.spawn("rofi -show drun -show-icons -icon-theme Boston -theme solarized") end,
               {description = "open application launcher", group = "awesome"}),
     
     -- Rofi Window change

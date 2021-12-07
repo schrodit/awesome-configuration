@@ -17,8 +17,6 @@ local dpi   = require("beautiful.xresources").apply_dpi
 
 --]]
 
--- https://github.com/streetturtle/awesome-wm-widgets/tree/master/volume-widget
-local volume_widget = require("awesome-wm-widgets.volume-widget.volume") 
 
 local math, string, os = math, string, os
 local my_table = awful.util.table or gears.table -- 4.{0,1} compatibility
@@ -376,9 +374,10 @@ function theme.at_screen_connect(s)
             --]]
             -- using separators
             arrow(theme.bg_normal, "#343434"),
-            wibox.container.background(wibox.container.margin(volume_widget{
-                widget_type = 'arc'
-            }, dpi(4), dpi(7)), "#343434"),
+            -- wibox.container.background(wibox.container.margin(volume_widget{
+            --     widget_type = 'arc'
+            -- }, dpi(4), dpi(7)), "#343434"),
+            wibox.container.background(wibox.container.margin(theme.volume.widget, dpi(4), dpi(7)), "#343434"),
             arrow("#343434", theme.bg_normal),
             wibox.container.background(wibox.container.margin(wibox.widget { mpdicon, theme.mpd.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(6)), theme.bg_focus),
             --arrow(theme.bg_normal, "#343434"),
