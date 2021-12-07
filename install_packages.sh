@@ -37,6 +37,8 @@ sudo systemctl start mpd.service
 
 echo "Install Google's roboto font"
 sudo pacman -S ttf-roboto noto-fonts-emoji
+cd ~/.fonts && curl -fLo "Droid Sans Mono for Powerline Nerd Font Complete.otf" https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/DroidSansMono/complete/Droid%20Sans%20Mono%20Nerd%20Font%20Complete.otf
+cd "$wd"
 
 echo "Install Powerline Fonts"
 yay -S powerline-fonts-git

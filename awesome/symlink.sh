@@ -33,3 +33,7 @@ do
     echo "Link ${target_link} to ${link_name}"
     ln -s -f $target_link $link_name
 done
+
+
+echo "Link termintor config"
+ln -sf "$THEME_DIR/terminator.config" "$HOME/.config/terminator/config"
