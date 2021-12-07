@@ -11,8 +11,9 @@ wd="$(pwd)"
 source "$THEME_DIR/helper.sh"
 
 echo "Install X Server"
-pacman -S xorg-server xorg-xrandr xorg-xinput
+pacman -S xorg-server xorg-xrandr xorg-xinput xbindkeys
 cp "$THEME_DIR/xserver/00-keyboard.conf" /etc/X11/xorg.conf.d/00-keyboard.conf
+ln -sf "$THEME_DIR/xserver/.xbindkeysrc" "$HOME/.xbindkeysrc"
 
 echo "Install Awesome"
 pacman -S awesome

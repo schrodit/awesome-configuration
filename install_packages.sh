@@ -31,12 +31,12 @@ echo "Install Rofi"
 sudo pacman -S rofi
 
 echo "Download and start mpd (music player daemon)"
-sudo pacman -S mpd # music player daemon
+sudo pacman -S mpd playerctl # music player daemon
 sudo systemctl enable mpd.service
 sudo systemctl start mpd.service
 
 echo "Install Google's roboto font"
-sudo pacman -S ttf-roboto
+sudo pacman -S ttf-roboto noto-fonts-emoji
 
 echo "Install Powerline Fonts"
 yay -S powerline-fonts-git
