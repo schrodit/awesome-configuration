@@ -11,7 +11,7 @@ source "$THEME_DIR/helper.sh"
 
 echo "Install General Utils"
 sudo pacman -S fzf curl openssh jq
-yay -S kube-ps1
+yay -S kube-ps1 kubeswitch
 
 echo "Install Kubernetes Utils"
 
