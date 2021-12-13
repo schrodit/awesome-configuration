@@ -70,9 +70,10 @@ ZSH_THEME="schrodit"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git history kubectl)
+plugins=(git history kube-ps1)
 
 source $ZSH/oh-my-zsh.sh
+source /opt/kube-ps1/kube-ps1.sh
 
 # User configuration
 
