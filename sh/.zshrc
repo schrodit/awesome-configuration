@@ -70,10 +70,10 @@ ZSH_THEME="schrodit"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git history kube-ps1)
+source /opt/kube-ps1/kube-ps1.sh
+plugins=(git history)
 
 source $ZSH/oh-my-zsh.sh
-source /opt/kube-ps1/kube-ps1.sh
 
 # User configuration
 
@@ -82,3 +82,4 @@ export EDITOR='vim'
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 
 source "$HOME/.aliases"
+source /usr/bin/switch.sh
