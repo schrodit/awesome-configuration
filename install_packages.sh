@@ -7,13 +7,15 @@ THEME_DIR="$(realpath $(dirname "$0"))"
 
 wd="$(pwd)"
 
+source "$THEME_DIR/helper.sh"
+
 # creating temp aur repo
 mkdir -p /aur
 chown "$USER" /aur
 
 if ! command -v yay &> /dev/null; then
     echo "Install yay"
-    sudo pacman -S --needed git base-devel
+    installWithPacman git base-devel
 
     cd /aur
     git clone https://aur.archlinux.org/yay.git
@@ -24,25 +26,25 @@ fi
 
 if ! command -v terminator &> /dev/null; then
     echo "Install terminator"
-    sudo pacman -S termiantor
+    installWithPacman termiantor
 fi
 
 echo "Install Rofi"
-sudo pacman -S rofi
+installWithPacman rofi
 
 echo "Download and start mpd (music player daemon)"
-sudo pacman -S mpd playerctl # music player daemon
+installWithPacman mpd playerctl # music player daemon
 sudo systemctl enable mpd.service
 sudo systemctl start mpd.service
 
 echo "Install Google's roboto font"
-sudo pacman -S ttf-roboto noto-fonts-emoji
+installWithPacman ttf-roboto noto-fonts-emoji
 cd ~/.fonts && curl -fLo "Droid Sans Mono for Powerline Nerd Font Complete.otf" https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/DroidSansMono/complete/Droid%20Sans%20Mono%20Nerd%20Font%20Complete.otf
 cd "$wd"
 
 echo "Install Powerline Fonts"
-yay -S powerline-fonts-git
+installWithYay powerline-fonts-git
 
 echo "Install Papirus Icon Theme"
-sudo pacman -S papirus-icon-theme
+installWithPacman papirus-icon-theme
 

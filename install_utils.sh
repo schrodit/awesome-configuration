@@ -10,8 +10,8 @@ wd="$(pwd)"
 source "$THEME_DIR/helper.sh"
 
 echo "Install General Utils"
-sudo pacman -S fzf curl openssh jq
-yay -S kube-ps1 kubeswitch
+installWithPacman fzf curl openssh jq
+installWithYay kube-ps1 kubeswitch-bin
 
 echo "Install Kubernetes Utils"
 
@@ -39,6 +39,7 @@ echo "Installing krew plugin manager"
 )
 
 echo "Install zsh theme"
+mkdir -p "$HOME/.oh-my-zsh/themes"
 createSymlink "$THEME_DIR/sh/schrodit.zsh-theme" "$HOME/.oh-my-zsh/themes/schrodit.zsh-theme"
 
 createSymlink "$THEME_DIR/.aliases" "$HOME/.aliases"
