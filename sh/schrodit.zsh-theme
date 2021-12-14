@@ -13,7 +13,7 @@ KUBE_PS1_SYMBOL_USE_IMG=true
 KUBE_PS1_DIVIDER="|"
 
 PROMPT="  %(?:%{$fg_bold[green]%}😊 :%{$fg_bold[red]%}🔥 )"
-PROMPT+="%{$fg[cyan]%}%~%{$reset_color%} $(git_prompt_info)
+PROMPT+="%{$fg[cyan]%}%~%{$reset_color%} \$(git_prompt_info)
 ╰─ λ %{$reset_color%}"
 
 RPS1="\$(kube_ps1)"
