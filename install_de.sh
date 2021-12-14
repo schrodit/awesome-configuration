@@ -15,6 +15,10 @@ installWithPacman xorg-server xorg-xrandr xorg-xinput xbindkeys xsel
 sudo cp "$THEME_DIR/xserver/00-keyboard.conf" /etc/X11/xorg.conf.d/00-keyboard.conf
 createSymlink "$THEME_DIR/xserver/.xbindkeysrc" "$HOME/.xbindkeysrc"
 
+echo "Install audio"
+installWithPacman pulseaudio pamixer
+
+
 echo "Install Awesome"
 installWithPacman awesome
 

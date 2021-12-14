@@ -17,6 +17,8 @@ local dpi   = require("beautiful.xresources").apply_dpi
 
 --]]
 
+local volume_widget = require("theme/volume")
+
 
 local math, string, os = math, string, os
 local my_table = awful.util.table or gears.table -- 4.{0,1} compatibility
@@ -74,7 +76,7 @@ theme.widget_music                              = theme.dir .. "/icons/note.png"
 theme.widget_music_on                           = theme.dir .. "/icons/note_on.png"
 theme.widget_music_pause                        = theme.dir .. "/icons/pause.png"
 theme.widget_music_stop                         = theme.dir .. "/icons/stop.png"
-theme.widget_vol                                = theme.dir .. "/icons/vol.png"
+theme.widget_vol                                = theme.dir .. "/icons/volume_up.svg"
 theme.widget_vol_low                            = theme.dir .. "/icons/vol_low.png"
 theme.widget_vol_no                             = theme.dir .. "/icons/vol_no.png"
 theme.widget_vol_mute                           = theme.dir .. "/icons/vol_mute.png"
@@ -136,32 +138,6 @@ task:buttons(my_table.join(awful.button({}, 1, lain.widget.contrib.task.prompt))
 local scissors = wibox.widget.imagebox(theme.widget_scissors)
 scissors:buttons(my_table.join(awful.button({}, 1, function() awful.spawn.with_shell("xsel | xsel -i -b") end)))
 
--- Mail IMAP check
---[[ commented because it needs to be set before use
-local mailicon = wibox.widget.imagebox(theme.widget_mail)
-mailicon:buttons(my_table.join(awful.button({ }, 1, function () awful.spawn(mail) end)))
-theme.mail = lain.widget.imap({
-    timeout  = 180,
-    server   = "server",
-    mail     = "mail",
-    password = "keyring get mail",
-    settings = function()
-        if mailcount > 0 then
-            widget:set_text(" " .. mailcount .. " ")
-            mailicon:set_image(theme.widget_mail_on)
-        else
-            widget:set_text("")
-            mailicon:set_image(theme.widget_mail)
-        end
-    end
-})
---]]
-
--- ALSA volume
-theme.volume = lain.widget.alsabar({
-    --togglechannel = "IEC958,3",
-    notification_preset = { font = "Roboto 10", fg = theme.fg_normal },
-})
 
 -- MPD
 local musicplr = awful.util.terminal .. " -title Music -g 130x34-320+16 -e ncmpcpp"
@@ -232,17 +208,6 @@ local temp = lain.widget.temp({
 --]]
 local tempicon = wibox.widget.imagebox(theme.widget_temp)
 
--- / fs
-local fsicon = wibox.widget.imagebox(theme.widget_hdd)
---[[ commented because it needs Gio/Glib >= 2.54
-theme.fs = lain.widget.fs({
-    notification_preset = { fg = theme.fg_normal, bg = theme.bg_normal, font = "Terminus 10" },
-    settings = function()
-        local fsp = string.format(" %3.2f %s ", fs_now["/"].free, fs_now["/"].units)
-        widget:set_markup(markup.font(theme.font, fsp))
-    end
-})
---]]
 
 -- Battery
 local baticon = wibox.widget.imagebox(theme.widget_battery)
@@ -250,7 +215,7 @@ local bat = lain.widget.bat({
     settings = function()
         if bat_now.status and bat_now.status ~= "N/A" then
             if bat_now.ac_status == 1 then
-                widget:set_markup(markup.font(theme.font, " AC "))
+                widget:set_markup(markup.font(theme.font, " AC " .. bat_now.perc .. "% "))
                 baticon:set_image(theme.widget_ac)
                 return
             elseif not bat_now.perc and tonumber(bat_now.perc) <= 5 then
@@ -262,7 +227,7 @@ local bat = lain.widget.bat({
             end
             widget:set_markup(markup.font(theme.font, " " .. bat_now.perc .. "% "))
         else
-            widget:set_markup()
+            widget:set_markup(markup.font(theme.font, bat_now.status))
             baticon:set_image(theme.widget_ac)
         end
     end
@@ -374,15 +339,11 @@ function theme.at_screen_connect(s)
             --]]
             -- using separators
             arrow(theme.bg_normal, "#343434"),
-            -- wibox.container.background(wibox.container.margin(volume_widget{
-            --     widget_type = 'arc'
-            -- }, dpi(4), dpi(7)), "#343434"),
-            wibox.container.background(wibox.container.margin(theme.volume.widget, dpi(4), dpi(7)), "#343434"),
+            wibox.container.background(wibox.container.margin(volume_widget(theme.dir).widget, dpi(4), dpi(7)), "#343434"),
             arrow("#343434", theme.bg_normal),
             wibox.container.background(wibox.container.margin(wibox.widget { mpdicon, theme.mpd.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(6)), theme.bg_focus),
             --arrow(theme.bg_normal, "#343434"),
             --wibox.container.background(wibox.container.margin(task, dpi(3), dpi(7)), "#343434"),
-            --wibox.container.background(wibox.container.margin(theme.volume, dpi(3), dpi(7)), theme.bg_normal),
             arrow(theme.bg_normal, "#777E76"),
             wibox.container.background(wibox.container.margin(wibox.widget { memicon, mem.widget, layout = wibox.layout.align.horizontal }, dpi(2), dpi(3)), "#777E76"),
             arrow("#777E76", "#4B696D"),
