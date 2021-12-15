@@ -5,11 +5,16 @@
 # needed to use aliases in watch commands
 alias watch='watch '
 
-###################
+########################
 # CLIPBOARD Linux only #
-###################
+########################
 alias pbcopy='xsel --clipboard --input'
 alias pbpaste='xsel --clipboard --output'
+
+########
+# Arch #
+########
+alias pacmanclean='pacman -Rsn $(pacman -Qdtq)'
 
 ##############
 # KUBERNETES #
