@@ -8,60 +8,73 @@ local icon_dir = "/icons/"
 local icon_vol_up = icon_dir .. "volume_up.svg"
 local icon_vol_down = icon_dir .. "volume_down.svg"
 local icon_vol_mute = icon_dir .. "volume_mute.svg"
+local icon_default = icon_dir .. "check_circle.svg"
+
+local function get_default_sink()
+    local fd = io.popen("pamixer --get-default-sink")
+    --local defaultSinkRaw = fd:read("*all")
+
+    local line = fd:read() -- read the first "Default Sink:" line
+    line = fd:read() -- read the first real line which should contain the default sink
+    fd:close()
+    if line == nil then
+        return nil
+    end
+
+    local sink = {}
+
+    -- read id
+    sink.raw = line
+    local res = line
+    local s, e = res:find(" ")
+    sink.id = tonumber(string.sub(res, 1, s))
+    res = string.sub(res, s + 1)
+    -- read name
+    s, e = res:find(" ")
+    sink.name = string.sub(res, 2, s-2)
+    -- read display name
+    sink.displyName = string.sub(res, s+1):sub(2, -2)
+
+    return sink
+end
 
 -- Returns a list of all available sinks.
 local function get_sinks() 
     local sinks = {}
 
-    local fd = io.popen("pamixer --get-default-sink")
-    local defaultSinkRaw = fd:read("*all")
+    local defaultSink = get_default_sink()
+
+
+    local fd = io.popen("pamixer --list-sinks")
+
+    local line = fd:read() -- read the first "Sink:" line
+    line = fd:read() -- read the first real line
+    while( line ~= nil ) do
+        local sink = {}
+        sink.default = false
+
+        -- read id
+        sink.raw = line
+        local res = line
+        local s, e = res:find(" ")
+        sink.id = tonumber(string.sub(res, 1, s))
+        res = string.sub(res, s + 1)
+        -- read name
+        s, e = res:find(" ")
+        sink.name = string.sub(res, 2, s-2)
+        -- read display name
+        sink.displyName = string.sub(res, s+1):sub(2, -2)
+
+        if defaultSink ~= nil and sink.name == defaultSink.name then
+            sink.default = true
+        end
+
+        table.insert(sinks, sink)
+        line = fd:read()
+    end
     fd:close()
 
-    for line in magiclines(defaultSinkRaw) do
-        if line ~= "Default sink:" then
-            local i = 0
-            local sink = {}
-            for token in string.gmatch(line, "[^%s]+") do
-                
-                if i == 0 then sink.id = token
-                elseif i == 1 then sink.name = token
-                elseif i == 2 then sink.displyName = token
-                end
-
-                i = i + 1
-            end
-
-            sinks[num_sinks] = sink
-            num_sinks = num_sinks + 1
-        end
-    end
-
-
-    fd = io.popen("pamixer --list-sinks")
-    local raw = fd:read("*all")
-    fd:close()
-
-    local num_sinks = 0
-    for line in magiclines(raw) do
-        if line ~= "Sinks:" then
-            local i = 0
-            local sink = {}
-            for token in string.gmatch(line, "[^%s]+") do
-                
-                if i == 0 then sink.id = token
-                elseif i == 1 then sink.name = token
-                elseif i == 2 then sink.displyName = token
-                end
-
-                i = i + 1
-            end
-
-            sinks[num_sinks] = sink
-            num_sinks = num_sinks + 1
-        end
-    end
-
-    return sinks
+    return sinks, defaultSink
 end
 
 function magiclines(s)
@@ -83,11 +96,48 @@ function factory(theme_dir)
     local dmenu = nil
 
     function volume_widget.detail()
-        naughty.notify({ text = "test", screen = mouse.screen })
+        local items = {}
+        local sinks, defaultSink = get_sinks()
+
+        local longestName = 0
+        for i, sink in ipairs(sinks) do
+            if string.len(sink.displyName) > longestName then
+                longestName = string.len(sink.displyName)
+            end
+
+            local icon = ""
+            if sink.default then
+                icon = theme_dir .. icon_default
+            end
+
+            table.insert(items, {
+                sink.displyName, function () -- onclick
+                    local res = os.execute("pacmd set-default-sink " .. tostring(sink.id))
+                    if res == false then
+                        naughty.notify({ text = "Unable to change default sink " .. tostring(res), screen = mouse.screen })
+                        return
+                    end
+                    naughty.notify({ text = "Set " .. sink.displyName .. " as default sink", screen = mouse.screen })
+                    dmenu:hide()
+                    dmenu = nil
+                end,
+                icon
+            })
+        end
+
+        dmenu = awful.menu({items = items, theme = { width = 350 }})
+        dmenu:show()
     end
 
     volume_widget.widget:buttons(awful.util.table.join(
-        awful.button({}, 1, volume_widget.detail)
+        awful.button({}, 1, function ()
+            if dmenu == nil then
+                volume_widget.detail()
+            else
+                dmenu:hide()
+                dmenu = nil
+            end
+        end)
     ))
 
     function volume_widget.update()
