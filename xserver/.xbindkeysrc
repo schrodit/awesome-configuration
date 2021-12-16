@@ -69,6 +69,15 @@
 "playerctl next"
    XF86AudioNext
 
+# Increase backlight by 10
+"xbacklight -inc 10"
+   XF86MonBrightnessUp
+
+# Play song
+"xbacklight -dec 10"
+   XF86MonBrightnessDown
+
+
 ##################################
 # End of xbindkeys configuration #
 ##################################
