@@ -191,6 +191,9 @@ local bat = lain.widget.bat({
                 baticon:set_image(theme.widget_battery)
             end
             widget:set_markup(markup.font(theme.font, " " .. bat_now.perc .. "% "))
+        elseif bat_now.status and bat_now.status == "N/A" then
+            widget:set_markup(markup.font(theme.font, ""))
+            baticon:set_image(theme.widget_ac)
         else
             widget:set_markup(markup.font(theme.font, bat_now.status))
             baticon:set_image(theme.widget_ac)
