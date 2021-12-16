@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-set -x
 set -e
 set -o pipefail
 
@@ -16,3 +15,6 @@ $THEME_DIR/awesome/symlink.sh
 
 echo "> Install Utils"
 sudo $THEME_DIR/install_utils.sh
+
+printf '\n\n\n#################################################\n\n'
+echo "Add 'exec bindkeys &' to your /etc/lightdm/XSession file"
