@@ -12,7 +12,6 @@ local icon_default = icon_dir .. "check_circle.svg"
 
 local function get_default_sink()
     local fd = io.popen("pamixer --get-default-sink")
-    --local defaultSinkRaw = fd:read("*all")
 
     local line = fd:read() -- read the first "Default Sink:" line
     line = fd:read() -- read the first real line which should contain the default sink
