@@ -124,7 +124,7 @@ function factory(theme_dir)
             })
         end
 
-        dmenu = awful.menu({items = items, theme = { width = 350 }})
+        dmenu = awful.menu({items = items, theme = { width = 350, height = 20 }})
         dmenu:show()
     end
 

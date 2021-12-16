@@ -298,8 +298,8 @@ function theme.at_screen_connect(s)
             pl(binclock.widget, "#777E76"),
             --]]
             -- using separators
-            arrow(theme.bg_normal, "#343434"),
-            wibox.container.background(wibox.container.margin(volume_widget(theme.dir).widget, dpi(4), dpi(7)), "#343434"),
+            --arrow(theme.bg_normal, "#343434"),
+            --wibox.container.background(wibox.container.margin(volume_widget(theme.dir).widget, dpi(4), dpi(7)), "#343434"),
             arrow("#343434", "#777E76"),
             --wibox.container.background(wibox.container.margin(wibox.widget { mpdicon, theme.mpd.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(6)), theme.bg_focus),
             --arrow(theme.bg_normal, "#343434"),
@@ -312,7 +312,9 @@ function theme.at_screen_connect(s)
             wibox.container.background(wibox.container.margin(wibox.widget { tempicon, temp.widget, layout = wibox.layout.align.horizontal }, dpi(4), dpi(4)), "#4B3B51"),
             --arrow("#4B3B51", "#CB755B"),
             --wibox.container.background(wibox.container.margin(wibox.widget { fsicon, theme.fs and theme.fs.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), "#CB755B"),
-            arrow("#4B3B51", "#CB755B"),
+            arrow("#4B3B51", "#d4ab4c"),
+            wibox.container.background(wibox.container.margin(volume_widget(theme.dir).widget, dpi(4), dpi(7)), "#d4ab4c"),
+            arrow("#d4ab4c", "#CB755B"),
             wibox.container.background(wibox.container.margin(wibox.widget { baticon, bat.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), "#CB755B"),
             --arrow("#CB755B", "#8DAA9A"),
             --wibox.container.background(wibox.container.margin(wibox.widget { nil, neticon, net.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), "#8DAA9A"),
