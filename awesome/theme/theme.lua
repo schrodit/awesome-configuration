@@ -18,6 +18,7 @@ local dpi   = require("beautiful.xresources").apply_dpi
 --]]
 
 local volume_widget = require("theme/volume")
+local system_widget = require("theme/system")
 
 
 local math, string, os = math, string, os
@@ -322,7 +323,8 @@ function theme.at_screen_connect(s)
             wibox.container.background(wibox.container.margin(wibox.widget.textclock(), dpi(4), dpi(8)), "#777E76"),
             arrow("#777E76", "alpha"),
             --]]
-            s.mylayoutbox,
+            wibox.container.background(wibox.container.margin(system_widget().widget, dpi(4), dpi(8)), "alpha"),
+            --s.mylayoutbox,
         },
     }
 end

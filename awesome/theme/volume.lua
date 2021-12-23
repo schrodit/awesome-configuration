@@ -242,56 +242,6 @@ function factory(theme_dir)
         dmenu:show()
     end
 
-    function volume_widget.display_volume_slider()
-        local volume_num = get_volume()
-
-
-        local function circle_helper(cr)
-            return gears.shape.circle(cr, 20, 20)
-        end
-
-        local slider = wibox.widget{
-            bar_shape           = gears.shape.rounded_rect,
-            bar_height          = 3,
-            bar_color           = "#6200EE",
-            handle_color        = "#6200EE",
-            handle_shape        = circle_helper,
-            handle_border_color = "#6200EE",
-            handle_border_width = 1,
-            handle_margins      = 5,
-            minimum             = 0,
-            maximum             = 100,
-            forced_height       = 32,
-            forced_width        = 400,
-            value               = volume_num,
-            widget              = wibox.widget.slider,
-        }
-
-        slider:connect_signal("property::value", function (s, v)
-            local res = os.execute("pamixer --set-volume " .. tostring(slider.value))
-            if res == false then
-                naughty.notify({ text = "Unable to set sink volume " .. tostring(res), screen = mouse.screen })
-                return
-            end
-            text:set_markup(" ".. tostring(slider.value) .. "%")
-        end)
-
-        volume_slider = awful.popup{
-            widget = {
-                slider,
-                margins = 20,
-                widget  = wibox.container.margin
-            },
-            maximum_width = 400,
-            maximum_height = 200,
-            preferred_positions = 'bottom',
-            preferred_anchors = 'middle',
-            ontop = true,
-        }
-        volume_slider:move_next_to(mouse.current_widget_geometry)
-        volume_slider.visible = true
-    end
-
     volume_widget.widget:buttons(awful.util.table.join(
         awful.button({}, 1, function ()
             if dmenu == nil or not dmenu.wibox.visible then
