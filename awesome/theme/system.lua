@@ -9,6 +9,10 @@ local mouse = mouse
 local theme_dir = os.getenv("HOME") .. "/.config/awesome/theme"
 local icon_dir = "/icons/"
 
+local icon_menu = icon_dir .. "menu.svg"
+local icon_menu_open = icon_dir .. "menu_open.svg"
+
+
 local icon_poweroff = icon_dir .. "poweroff.svg"
 local icon_poweroff_hover = icon_dir .. "poweroff_hover.svg"
 
@@ -112,6 +116,7 @@ local function new_system_menu(args)
         if args.theme_dir then
             smenu.theme_dir = args.theme_dir
         end
+        smenu.on_hide = args.on_hide
     end
 
     local function hide_cb()
@@ -193,6 +198,9 @@ local function new_system_menu(args)
     function smenu:hide()
         keygrabber.stop(self._keygrabber)
         self.popup.visible = false
+        if smenu.on_hide then
+            smenu.on_hide()
+        end
     end
 
     function smenu._keygrabber(...)
@@ -227,7 +235,7 @@ function factory(theme_dir)
         system_widget.theme_dir = theme_dir 
     end
 
-    local icon = wibox.widget.imagebox(system_widget.theme_dir .. "/icons/brightness.png")
+    local icon = wibox.widget.imagebox(system_widget.theme_dir .. icon_menu)
     system_widget.widget = icon
 
     local menu = nil
@@ -236,8 +244,12 @@ function factory(theme_dir)
         awful.button({}, 1, function ()
             if menu == nil or not menu:is_visible() then
                 menu = new_system_menu({
-                    theme_dir = system_widget.theme_dir
+                    theme_dir = system_widget.theme_dir,
+                    on_hide = function ()
+                        icon:set_image(system_widget.theme_dir .. icon_menu)
+                    end
                 })
+                icon:set_image(system_widget.theme_dir .. icon_menu_open)
             else
                 menu:hide()
                 menu = nil
