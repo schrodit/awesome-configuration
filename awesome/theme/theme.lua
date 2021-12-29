@@ -19,6 +19,8 @@ local dpi   = require("beautiful.xresources").apply_dpi
 
 local volume_widget = require("theme/volume")
 local system_widget = require("theme/system")
+local wifi_widget   = require("theme/wifi")
+
 
 
 local math, string, os = math, string, os
@@ -315,6 +317,8 @@ function theme.at_screen_connect(s)
             --wibox.container.background(wibox.container.margin(wibox.widget { fsicon, theme.fs and theme.fs.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), "#CB755B"),
             arrow("#4B3B51", "#d4ab4c"),
             wibox.container.background(wibox.container.margin(volume_widget(theme.dir).widget, dpi(4), dpi(7)), "#d4ab4c"),
+            arrow("#d4ab4c", "#CB755B"),
+            wibox.container.background(wibox.container.margin(wifi_widget(theme.dir).widget, dpi(4), dpi(7)), "#d4ab4c"),
             arrow("#d4ab4c", "#CB755B"),
             wibox.container.background(wibox.container.margin(wibox.widget { baticon, bat.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), "#CB755B"),
             --arrow("#CB755B", "#8DAA9A"),
