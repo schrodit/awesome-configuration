@@ -1,100 +1,221 @@
 local wibox = require("wibox")
 local awful = require("awful")
 local naughty = require("naughty")
-local gears = require("gears")
 local keygrabber = require("awful.keygrabber")
+local beautiful = require("beautiful")
+local inspect = require("inspect")
 
 local iwd = require("theme/iwd")
 
 local mouse = mouse
 
+local theme_dir = os.getenv("HOME") .. "/.config/awesome/theme"
 local icon_dir = "/icons/"
 local icon_wifi          = icon_dir .. "wifi.svg"
 local icon_wifi_off      = icon_dir .. "wifi_off.svg"
 local icon_wifi_password = icon_dir .. "wifi_password.svg"
+local icon_wifi_lock     = icon_dir .. "lock.svg"
+local icon_wifi_done     = icon_dir .. "done.svg"
 
 
-local function get_default_sink()
-    local fd = io.popen("pamixer --get-default-sink")
+local icon_wifi_strength_1 = icon_dir .. "wifi_strenght_1.svg"
+local icon_wifi_strength_2 = icon_dir .. "wifi_strenght_2.svg"
+local icon_wifi_strength_3 = icon_dir .. "wifi_strenght_3.svg"
+local icon_wifi_strength_4 = icon_dir .. "wifi_strenght_4.svg"
 
-    local line = fd:read() -- read the first "Default Sink:" line
-    line = fd:read() -- read the first real line which should contain the default sink
-    fd:close()
-    if line == nil then
-        return nil
+
+
+local function placeholder_widget(height, width)
+    if not width then
+        width = height
     end
-
-    local sink = {}
-
-    -- read id
-    sink.raw = line
-    local res = line
-    local s, e = res:find(" ")
-    sink.id = tonumber(string.sub(res, 1, s))
-    res = string.sub(res, s + 1)
-    -- read name
-    s, e = res:find(" ")
-    sink.name = string.sub(res, 2, s-2)
-    -- read display name
-    sink.displyName = string.sub(res, s+1):sub(2, -2)
-
-    return sink
+    local placeholder = wibox.widget{
+        text = "",
+        widget = wibox.widget.textbox,
+    }
+    placeholder.forced_height = height
+    placeholder.forced_width = width
+    return placeholder
 end
 
--- Returns a list of all available sinks.
-local function get_sinks() 
-    local sinks = {}
+-- Creates a new wifi endpoint entry with icons and action that 
+-- is executed in click.
+local function new_wifi_menu_entry(args)
+    local entry = {}
 
-    local defaultSink = get_default_sink()
+    entry.network = assert(args.network, "network needed")
+    entry.action = args.action
+    entry.on_hide = args.on_hide
+
+    entry.widget_entry = wibox.widget{
+        layout = wibox.layout.fixed.horizontal,
+        spacing = 5,
+    }
+
+    entry.text_widget = wibox.widget{
+        markup = entry.network.name,
+        widget = wibox.widget.textbox,
+    }
+    entry.text_background = wibox.container.background(entry.text_widget)
+
+    if entry.network.connected then
+        local icon = wibox.widget.imagebox(theme_dir .. icon_wifi_done)
+        icon.forced_height = 18
+        icon.forced_width = 18
+        entry.widget_entry:add(icon)
+    else
+        entry.widget_entry:add(placeholder_widget(18))
+    end
+
+    local strenght_icon = nil
+    if entry.network.signal_strength > -5000 then
+        strenght_icon = wibox.widget.imagebox(theme_dir .. icon_wifi_strength_4)
+    elseif entry.network.signal_strength > -7000 then
+        strenght_icon = wibox.widget.imagebox(theme_dir .. icon_wifi_strength_3)
+    elseif entry.network.signal_strength > -8000 then
+        strenght_icon = wibox.widget.imagebox(theme_dir .. icon_wifi_strength_2)
+    else
+        strenght_icon = wibox.widget.imagebox(theme_dir .. icon_wifi_strength_1)
+    end
+    strenght_icon.forced_height = 18
+    strenght_icon.forced_width = 18
+    entry.widget_entry:add(strenght_icon)
 
 
-    local fd = io.popen("pamixer --list-sinks")
+    if entry.network.type == "psk" then
+        local icon = wibox.widget.imagebox(theme_dir .. icon_wifi_lock)
+        icon.forced_height = 18
+        icon.forced_width = 18
+        entry.widget_entry:add(icon)
+    else
+        entry.widget_entry:add(placeholder_widget(18))
+    end
 
-    local line = fd:read() -- read the first "Sink:" line
-    line = fd:read() -- read the first real line
-    while( line ~= nil ) do
-        local sink = {}
-        sink.default = false
+    entry.widget_entry:add(entry.text_background)
 
-        -- read id
-        sink.raw = line
-        local res = line
-        local s, e = res:find(" ")
-        sink.id = tonumber(string.sub(res, 1, s))
-        res = string.sub(res, s + 1)
-        -- read name
-        s, e = res:find(" ")
-        sink.name = string.sub(res, 2, s-2)
-        -- read display name
-        sink.displyName = string.sub(res, s+1):sub(2, -2)
+    entry.widget = wibox.widget{
+        entry.widget_entry,
+        margins = 5,
+        widget  = wibox.container.margin
+    }
 
-        if defaultSink ~= nil and sink.name == defaultSink.name then
-            sink.default = true
+    entry.widget:connect_signal("mouse::enter", function ()
+        entry.text_background:set_fg(beautiful.fg_focus)
+        --entry.icon_widget:set_image(entry.icon_hover)
+    end)
+    entry.widget:connect_signal("mouse::leave", function ()
+        entry.text_background:set_fg(beautiful.fg)
+        --entry.icon_widget:set_image(entry.icon)
+    end)
+
+    entry.widget:buttons(awful.util.table.join(
+        awful.button({}, 1, function ()
+            if entry.on_hide then
+                entry.on_hide()
+            end
+            if entry.action then
+                entry.action()
+            end
+        end)
+    ))
+
+    return entry
+end
+
+-- args can contain the following properties:
+-- theme_dir: path to the theme (optional)
+-- on_hide: callback that will be called when the menu will be hidden.
+local function new_wifi_menu(args)
+    local smenu = {
+        theme_dir = theme_dir
+    }
+
+    if args then
+        if args.theme_dir then
+            smenu.theme_dir = args.theme_dir
+        end
+        smenu.on_hide = args.on_hide
+    end
+
+    local function hide_cb()
+        smenu:hide()
+    end
+
+    local items = wibox.widget{
+        layout = wibox.layout.flex.vertical
+    }
+    for i, net in ipairs(args.wifi_widget.networks) do
+        
+        local icon = ""
+        if net.type == "psk" then
+            icon = theme_dir .. icon_wifi_password
         end
 
-        table.insert(sinks, sink)
-        line = fd:read()
+        items:add(new_wifi_menu_entry({
+            network = net,
+            on_hide = hide_cb,
+            action = function ()
+                naughty.notify({ text = "Switch WiFi to " .. net.name .. ". Not implemented yet!", screen = mouse.screen })
+                smenu:hide()
+            end
+        }).widget)
     end
-    fd:close()
+    
 
-    return sinks, defaultSink
-end
+    smenu.popup = awful.popup{
+        widget = {
+            items,
+            margins = 10,
+            widget  = wibox.container.margin
+        },
+        maximum_width = 400,
+        maximum_height = 10000,
+        height = 800,
+        preferred_positions = 'bottom',
+        preferred_anchors = 'middle',
+        ontop = true,
+    }
 
--- returns the current volume
-local function get_volume()
-    local fd = io.popen("pamixer --get-volume")
-    local count = fd:read("*all")
-    fd:close()
-    count = tonumber(count)
-    return count
-end
+    local grabber = function (_, key, event)
+        if event ~= "press" then return end
 
--- Returns if the volume is currently muted
-local function get_mute()
-    local fd = io.popen("pamixer --get-mute")
-    local mute = fd:read()
-    fd:close()
-    return mute
+        if key == "Escape" then
+            smenu:hide()
+        end
+    end
+
+    function smenu:is_visible()
+        return self.popup.visible        
+    end
+
+    function smenu:hide()
+        keygrabber.stop(self._keygrabber)
+        self.popup.visible = false
+        if smenu.on_hide then
+            smenu.on_hide()
+        end
+    end
+
+    function smenu._keygrabber(...)
+        grabber(...)
+    end
+
+    keygrabber.run(smenu._keygrabber)
+
+    -- add an offset to the geometry if there is not enough space for the popup.
+    -- otherwise the popup would be placed on the left top corner.
+    local current_geo = mouse.current_widget_geometry
+    local current_screen_geo = mouse.screen.geometry
+    local space_left = current_screen_geo.width - current_geo.x
+    local widget_geo = current_geo
+    if space_left < 40 then
+        widget_geo.x = current_screen_geo.width - 45
+    end
+    
+    smenu.popup:move_next_to(widget_geo)
+    smenu.popup.visible = true
+
+    return smenu
 end
 
 local function factory(theme_dir)
@@ -107,7 +228,7 @@ local function factory(theme_dir)
     local text =  wibox.widget.textbox()
     text:set_align("right")
 
-    local icon = wibox.widget.imagebox(theme_dir .. "/icons/volume_up.svg")
+    local icon = wibox.widget.imagebox(theme_dir .. icon_wifi)
     wifi_widget.widget = wibox.widget { icon, text, layout = wibox.layout.align.horizontal }
     local connectedNetworkTooltip = awful.tooltip{ objects = {wifi_widget.widget}, text = "N/A" }
     wifi_widget.widget:connect_signal("mouse::enter", function ()
@@ -121,43 +242,18 @@ local function factory(theme_dir)
         connectedNetworkTooltip.text = wifi_widget.connected.name
     end)
 
-    local dmenu = nil
-
-    function wifi_widget.detail()
-        wifi_widget.networks, wifi_widget.connected = wifi_widget.iwd:get_networks()
-
-
-        local items = {}
-
-        for name, net in pairs(wifi_widget.networks) do
-            
-            local icon = ""
-            if net.type == "psk" then
-                icon = theme_dir .. icon_wifi_password
-            end
-
-            table.insert(items, {
-                name, function () -- onclick
-                    naughty.notify({ text = "Switch WiFi to " .. name .. ". Not implemented yet!", screen = mouse.screen })
-                    dmenu:hide()
-                    dmenu = nil
-                end,
-                icon
-            })
-        end
-
-        dmenu = awful.menu({items = items, theme = { width = 200, height = 20 }})
-        dmenu:show()
-    end
+    local menu = nil
 
     wifi_widget.widget:buttons(awful.util.table.join(
         awful.button({}, 1, function ()
-            if dmenu == nil or not dmenu.wibox.visible then
-                naughty.notify({text = "show"})
-                wifi_widget.detail()
+            if menu == nil or not menu:is_visible() then
+                menu = new_wifi_menu({
+                    wifi_widget = wifi_widget,
+                    theme_dir = theme_dir,
+                })
             else
-                dmenu:hide()
-                dmenu = nil
+                menu:hide()
+                menu = nil
             end
         end)
     ))
