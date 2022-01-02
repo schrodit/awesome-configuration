@@ -14,7 +14,7 @@ alias pbpaste='xsel --clipboard --output'
 ########
 # Arch #
 ########
-alias pacmanclean='pacman -Rsn $(pacman -Qdtq)'
+alias pacmanclean='sudo pacman -Rsn $(pacman -Qdtq)'
 
 ##############
 # KUBERNETES #
