@@ -45,3 +45,5 @@ createSymlink "$THEME_DIR/sh/schrodit.zsh-theme" "$HOME/.oh-my-zsh/themes/schrod
 createSymlink "$THEME_DIR/.aliases" "$HOME/.aliases"
 createSymlink "$THEME_DIR/sh/.zshrc" "$HOME/.zshrc"
 
+echo "Install Node Version Manager"
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
