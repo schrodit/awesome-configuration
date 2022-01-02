@@ -19,7 +19,10 @@ installWithPacman pulseaudio pamixer
 
 
 echo "Install Awesome"
-installWithPacman awesome
+installWithPacman awesome luarocks
+# only install for lua 5.3 as awesome is using lua 5.3
+sudo luarocks install --lua-version 5.3 --server=http://luarocks.org/manifests/daurnimator ldbus DBUS_INCDIR=/usr/include/dbus-1.0/ DBUS_ARCH_INCDIR=/usr/lib/dbus-1.0/include
+sudo luarocks install --lua-version 5.3 inspect
 
 echo "Install Lightdm"
 installWithPacman lightdm lightdm-webkit2-greeter lightdm-webkit-theme-litarvan

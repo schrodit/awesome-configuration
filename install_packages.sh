@@ -32,6 +32,9 @@ fi
 echo "Install Rofi"
 installWithPacman rofi
 
+echo "Install Bluetooth"
+installWithPacman bluez bluez-utils pulseaudio-bluetooth
+
 echo "Download and start mpd (music player daemon)"
 installWithPacman mpd playerctl # music player daemon
 sudo systemctl enable mpd.service
