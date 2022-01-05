@@ -1,0 +1,8 @@
+kind: SwitchConfig
+version: v1alpha1
+refreshIndexAfter: 1h
+kubeconfigStores:
+- kind: filesystem
+  id: default
+  paths:
+  - "~/.kubeconfigs/"

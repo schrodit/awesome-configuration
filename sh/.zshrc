@@ -80,6 +80,7 @@ source $ZSH/oh-my-zsh.sh
 export EDITOR='vim'
 
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+export PATH="$PATH:/home/tim/.local/bin"
 
 source "$HOME/.aliases"
 if [[ -f "/usr/bin/switch.sh" ]]; then

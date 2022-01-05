@@ -11,7 +11,7 @@ source "$THEME_DIR/helper.sh"
 
 echo "Install General Utils"
 installWithPacman fzf curl openssh jq
-installWithYay kube-ps1 kubeswitch-bin
+installWithYay kube-ps1 kubeswitch
 
 echo "Install Kubernetes Utils"
 
@@ -44,6 +44,7 @@ createSymlink "$THEME_DIR/sh/schrodit.zsh-theme" "$HOME/.oh-my-zsh/themes/schrod
 
 createSymlink "$THEME_DIR/.aliases" "$HOME/.aliases"
 createSymlink "$THEME_DIR/sh/.zshrc" "$HOME/.zshrc"
+createSymlink "$THEME_DIR/sh/switch-config.yaml" "$HOME/.kube/switch-config.yaml"
 
 echo "Install Node Version Manager"
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
