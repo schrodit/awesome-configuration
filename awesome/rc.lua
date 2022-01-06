@@ -694,7 +694,7 @@ client.connect_signal("request::titlebars", function(c)
             layout  = wibox.layout.flex.horizontal
         },
         { -- Right
-            awful.titlebar.widget.floatingbutton (c),
+            --awful.titlebar.widget.floatingbutton (c),
             wibox.container.margin(awful.titlebar.widget.maximizedbutton(c), dpi(3), dpi(3), dpi(3), dpi(3)),
             wibox.container.margin(awful.titlebar.widget.minimizebutton(c), dpi(3), dpi(3), dpi(3), dpi(3)),
             --awful.titlebar.widget.stickybutton   (c),

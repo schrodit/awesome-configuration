@@ -225,7 +225,7 @@ local function new_system_menu(args)
     return smenu
 end
 
-function factory(theme_dir)
+local function factory(theme_dir)
 
     local system_widget = {
         theme_dir = os.getenv("HOME") .. "/.config/awesome/theme"
