@@ -3,9 +3,11 @@ local awful = require("awful")
 local naughty = require("naughty")
 local keygrabber = require("awful.keygrabber")
 local beautiful = require("beautiful")
+local lfs = require("lfs")
 local inspect = require("inspect")
 
 local iwd = require("theme/iwd")
+local helper = require("theme/helper")
 
 local mouse = mouse
 
@@ -13,6 +15,8 @@ local theme_dir = os.getenv("HOME") .. "/.config/awesome/theme"
 local icon_dir = "/icons/"
 local icon_wifi          = icon_dir .. "wifi.svg"
 local icon_wifi_off      = icon_dir .. "wifi_off.svg"
+local icon_ethernet      = icon_dir .. "ethernet.svg"
+
 local icon_wifi_password = icon_dir .. "wifi_password.svg"
 local icon_wifi_lock     = icon_dir .. "lock.svg"
 local icon_wifi_done     = icon_dir .. "done.svg"
@@ -23,6 +27,8 @@ local icon_wifi_strength_2 = icon_dir .. "wifi_strenght_2.svg"
 local icon_wifi_strength_3 = icon_dir .. "wifi_strenght_3.svg"
 local icon_wifi_strength_4 = icon_dir .. "wifi_strenght_4.svg"
 
+
+local linux_net_class_dir = '/sys/class/net'
 
 
 local function placeholder_widget(height, width)
@@ -36,6 +42,16 @@ local function placeholder_widget(height, width)
     placeholder.forced_height = height
     placeholder.forced_width = width
     return placeholder
+end
+
+-- Checks if a wifi device exists by reading "/sys/class/net"
+local function wifi_device_exists() 
+    for dir in lfs.dir(linux_net_class_dir) do
+        if dir:find('^wl') then
+           return true
+        end
+    end
+    return false
 end
 
 -- Creates a new wifi endpoint entry with icons and action that 
@@ -220,35 +236,41 @@ end
 
 local function factory(theme_dir)
 
-    local wifi_widget = {}
+    local net_widget = {}
 
-    wifi_widget.iwd = iwd.new()
+    net_widget.iwd = iwd.new()
 
-    wifi_widget.theme_dir = theme_dir
+    net_widget.theme_dir = theme_dir
     local text =  wibox.widget.textbox()
     text:set_align("right")
 
     local icon = wibox.widget.imagebox(theme_dir .. icon_wifi)
-    wifi_widget.widget = wibox.widget { icon, text, layout = wibox.layout.align.horizontal }
-    local connectedNetworkTooltip = awful.tooltip{ objects = {wifi_widget.widget}, text = "N/A" }
-    wifi_widget.widget:connect_signal("mouse::enter", function ()
-        wifi_widget:update()
+    net_widget.widget = wibox.widget { icon, text, layout = wibox.layout.align.horizontal }
 
-        if not wifi_widget.connected then
+    if not wifi_device_exists() then
+        icon:set_image(theme_dir .. icon_ethernet)
+        return net_widget
+    end
+
+    local connectedNetworkTooltip = awful.tooltip{ objects = {net_widget.widget}, text = "N/A" }
+    net_widget.widget:connect_signal("mouse::enter", function ()
+        net_widget:update()
+
+        if not net_widget.connected then
             connectedNetworkTooltip.text = "Not connected"
             return
         end
 
-        connectedNetworkTooltip.text = wifi_widget.connected.name
+        connectedNetworkTooltip.text = net_widget.connected.name
     end)
 
     local menu = nil
 
-    wifi_widget.widget:buttons(awful.util.table.join(
+    net_widget.widget:buttons(awful.util.table.join(
         awful.button({}, 1, function ()
             if menu == nil or not menu:is_visible() then
                 menu = new_wifi_menu({
-                    wifi_widget = wifi_widget,
+                    wifi_widget = net_widget,
                     theme_dir = theme_dir,
                 })
             else
@@ -258,25 +280,25 @@ local function factory(theme_dir)
         end)
     ))
 
-    function wifi_widget:update()
-        wifi_widget.networks, wifi_widget.connected = wifi_widget.iwd:get_networks()
+    function net_widget:update()
+        net_widget.networks, net_widget.connected = net_widget.iwd:get_networks()
 
-        local icon_img = wifi_widget.theme_dir .. icon_wifi_off
-        if wifi_widget.connected then
-            icon_img = wifi_widget.theme_dir .. icon_wifi
+        local icon_img = net_widget.theme_dir .. icon_wifi_off
+        if net_widget.connected then
+            icon_img = net_widget.theme_dir .. icon_wifi
         end
     
         icon:set_image(icon_img)
     end
 
-    wifi_widget:update()
+    net_widget:update()
     local mytimer = timer({ timeout = 60 })
     mytimer:connect_signal("timeout", function ()
-        wifi_widget:update()
+        net_widget:update()
     end)
     mytimer:start()
 
-    return wifi_widget
+    return net_widget
 end
 
 return factory
