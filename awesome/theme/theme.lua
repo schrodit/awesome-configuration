@@ -19,9 +19,8 @@ local dpi   = require("beautiful.xresources").apply_dpi
 
 local volume_widget = require("theme/volume")
 local system_widget = require("theme/system")
-local wifi_widget   = require("theme/wifi")
-
-
+local titlebar = require("theme/titlebar")
+local net_widget   = require("theme/net")
 
 local math, string, os = math, string, os
 local my_table = awful.util.table or gears.table -- 4.{0,1} compatibility
@@ -207,29 +206,6 @@ end)
 -- Separators
 local arrow = separators.arrow_left
 
-function theme.powerline_rl(cr, width, height)
-    local arrow_depth, offset = height/2, 0
-
-    -- Avoid going out of the (potential) clip area
-    if arrow_depth < 0 then
-        width  =  width + 2*arrow_depth
-        offset = -arrow_depth
-    end
-
-    cr:move_to(offset + arrow_depth         , 0        )
-    cr:line_to(offset + width               , 0        )
-    cr:line_to(offset + width - arrow_depth , height/2 )
-    cr:line_to(offset + width               , height   )
-    cr:line_to(offset + arrow_depth         , height   )
-    cr:line_to(offset                       , height/2 )
-
-    cr:close_path()
-end
-
-local function pl(widget, bgcolor, padding)
-    return wibox.container.background(wibox.container.margin(widget, dpi(16), dpi(16)), bgcolor, theme.powerline_rl)
-end
-
 function theme.at_screen_connect(s)
     -- Quake application
     s.quake = lain.util.quake({ app = awful.util.terminal })
@@ -270,6 +246,16 @@ function theme.at_screen_connect(s)
     -- Create the wibox
     s.mywibox = awful.wibar({ position = "top", screen = s, height = dpi(20), bg = theme.bg_normal, fg = theme.fg_normal })
 
+    s.titlebar_widgets = titlebar.titlebar_widgets({theme = theme})
+    s.titlebar_widgets:add(wibox.widget { memicon, mem.widget, layout = wibox.layout.align.horizontal }, "#777E76", dpi(2))
+    s.titlebar_widgets:add(wibox.widget { cpuicon, cpu.widget, layout = wibox.layout.align.horizontal }, "#4B696D", dpi(3), dpi(4))
+    s.titlebar_widgets:add(wibox.widget { tempicon, temp.widget, layout = wibox.layout.align.horizontal }, "#4B3B51", dpi(4), dpi(4))
+    s.titlebar_widgets:add(volume_widget(theme.dir).widget, "#d4ab4c", dpi(4), dpi(7))
+    s.titlebar_widgets:add(net_widget(theme.dir).widget, "#8DAA9A", dpi(4), dpi(7))
+    s.titlebar_widgets:add(wibox.widget { baticon, bat.widget, layout = wibox.layout.align.horizontal }, "#CB755B")
+    s.titlebar_widgets:add(wibox.widget.textclock(), "#777E76", dpi(4), dpi(8))
+    s.titlebar_widgets:add(system_widget().widget, "alpha", dpi(4), dpi(8))
+
     -- Add widgets to the wibox
     s.mywibox:setup {
         layout = wibox.layout.align.horizontal,
@@ -281,51 +267,7 @@ function theme.at_screen_connect(s)
             spr,
         },
         s.middle_placeholder,
-        { -- Right widgets
-            layout = wibox.layout.fixed.horizontal,
-            wibox.widget.systray(),
-            --[[ using shapes
-            pl(wibox.widget { mpdicon, theme.mpd.widget, layout = wibox.layout.align.horizontal }, "#343434"),
-            pl(task, "#343434"),
-            --pl(wibox.widget { mailicon, mail and theme.mail.widget, layout = wibox.layout.align.horizontal }, "#343434"),
-            pl(wibox.widget { memicon, mem.widget, layout = wibox.layout.align.horizontal }, "#777E76"),
-            pl(wibox.widget { cpuicon, cpu.widget, layout = wibox.layout.align.horizontal }, "#4B696D"),
-            pl(wibox.widget { tempicon, temp.widget, layout = wibox.layout.align.horizontal }, "#4B3B51"),
-            --pl(wibox.widget { fsicon, theme.fs and theme.fs.widget, layout = wibox.layout.align.horizontal }, "#CB755B"),
-            pl(wibox.widget { baticon, bat.widget, layout = wibox.layout.align.horizontal }, "#8DAA9A"),
-            pl(wibox.widget { neticon, net.widget, layout = wibox.layout.align.horizontal }, "#C0C0A2"),
-            pl(binclock.widget, "#777E76"),
-            --]]
-            -- using separators
-            --arrow(theme.bg_normal, "#343434"),
-            --wibox.container.background(wibox.container.margin(volume_widget(theme.dir).widget, dpi(4), dpi(7)), "#343434"),
-            arrow(theme.bg_normal, "#777E76"),
-            --wibox.container.background(wibox.container.margin(wibox.widget { mpdicon, theme.mpd.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(6)), theme.bg_focus),
-            --arrow(theme.bg_normal, "#343434"),
-            --wibox.container.background(wibox.container.margin(task, dpi(3), dpi(7)), "#343434"),
-            --arrow(theme.bg_normal, "#777E76"),
-            wibox.container.background(wibox.container.margin(wibox.widget { memicon, mem.widget, layout = wibox.layout.align.horizontal }, dpi(2), dpi(3)), "#777E76"),
-            arrow("#777E76", "#4B696D"),
-            wibox.container.background(wibox.container.margin(wibox.widget { cpuicon, cpu.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(4)), "#4B696D"),
-            arrow("#4B696D", "#4B3B51"),
-            wibox.container.background(wibox.container.margin(wibox.widget { tempicon, temp.widget, layout = wibox.layout.align.horizontal }, dpi(4), dpi(4)), "#4B3B51"),
-            --arrow("#4B3B51", "#CB755B"),
-            --wibox.container.background(wibox.container.margin(wibox.widget { fsicon, theme.fs and theme.fs.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), "#CB755B"),
-            arrow("#4B3B51", "#d4ab4c"),
-            wibox.container.background(wibox.container.margin(volume_widget(theme.dir).widget, dpi(4), dpi(7)), "#d4ab4c"),
-            arrow("#d4ab4c", "#8DAA9A"),
-            wibox.container.background(wibox.container.margin(wifi_widget(theme.dir).widget, dpi(4), dpi(7)), "#8DAA9A"),
-            arrow("#8DAA9A", "#CB755B"),
-            wibox.container.background(wibox.container.margin(wibox.widget { baticon, bat.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), "#CB755B"),
-            --arrow("#CB755B", "#8DAA9A"),
-            --wibox.container.background(wibox.container.margin(wibox.widget { nil, neticon, net.widget, layout = wibox.layout.align.horizontal }, dpi(3), dpi(3)), "#8DAA9A"),
-            arrow("#CB755B", "#777E76"),
-            wibox.container.background(wibox.container.margin(wibox.widget.textclock(), dpi(4), dpi(8)), "#777E76"),
-            arrow("#777E76", "alpha"),
-            --]]
-            wibox.container.background(wibox.container.margin(system_widget().widget, dpi(4), dpi(8)), "alpha"),
-            --s.mylayoutbox,
-        },
+        s.titlebar_widgets:build(),
     }
 end
 
