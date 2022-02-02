@@ -4,5 +4,6 @@ refreshIndexAfter: 1h
 kubeconfigStores:
 - kind: filesystem
   id: default
+  kubeconfigName: "*.config"
   paths:
-  - "~/.kubeconfigs/"
+  - "~/.kubeconfigs"
