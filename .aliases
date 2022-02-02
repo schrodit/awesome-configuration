@@ -23,6 +23,7 @@ alias pacmanclean='sudo pacman -Rsn $(pacman -Qdtq)'
 alias k="kubectl"
 alias kns="kubectl ns"
 alias kx="switch"
+alias kxc="switch --kubeconfig-path "
 
 alias kg='kubectl get'
 alias kd='kubectl describe'
@@ -42,7 +43,7 @@ alias kalln='kubectl api-resources --verbs=list --namespaced -o name | xargs -n 
 
 alias kwkind='export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"'
 
-alias ktmp='pbpaste > /tmp/.kubeconfig && kwc /tmp/.kubeconfig'
+alias ktmp='pbpaste > /tmp/.kubeconfig && kxc /tmp/.kubeconfig'
 
 function kwsec() {
   kubectl ksd get secret $1 -ojson | jq -r '.stringData.kubeconfig' | pbcopy

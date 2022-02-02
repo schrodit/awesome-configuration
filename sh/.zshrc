@@ -80,7 +80,7 @@ source $ZSH/oh-my-zsh.sh
 export EDITOR='vim'
 
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
-export PATH="$PATH:/home/tim/.local/bin"
+export PATH="$PATH:/home/tim/.local/bin:/home/tim/bin"
 
 source "$HOME/.aliases"
 if [[ -f "/usr/bin/switch.sh" ]]; then
@@ -92,3 +92,7 @@ if [[ -f "$NVM_DIR/nvm.sh" ]]; then
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 fi
+
+export PATH=$PATH:/home/tim/bin
+
+source '/home/tim/lib/azure-cli/az.completion'
