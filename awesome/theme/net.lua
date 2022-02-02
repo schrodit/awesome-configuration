@@ -7,7 +7,6 @@ local lfs = require("lfs")
 local inspect = require("inspect")
 
 local iwd = require("theme/iwd")
-local helper = require("theme/helper")
 
 local mouse = mouse
 
@@ -45,7 +44,7 @@ local function placeholder_widget(height, width)
 end
 
 -- Checks if a wifi device exists by reading "/sys/class/net"
-local function wifi_device_exists() 
+local function wifi_device_exists()
     for dir in lfs.dir(linux_net_class_dir) do
         if dir:find('^wl') then
            return true
@@ -53,6 +52,30 @@ local function wifi_device_exists()
     end
     return false
 end
+
+local function ethernet_dvc_is_connected(device)
+    local carrier_file = io.open(linux_net_class_dir .. '/' .. device .. '/carrier')
+    if carrier_file == nil then
+        return false
+    end
+    local carrier = carrier_file:read()
+    carrier_file:close();
+    return tonumber(carrier) == 1
+end
+
+-- Checks if a ethernet device exists and is connected by reading "/sys/class/net"
+local function ethernet_connected()
+    for device in lfs.dir(linux_net_class_dir) do
+        if device:find('^en') then
+            if ethernet_dvc_is_connected(device) then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+
 
 -- Creates a new wifi endpoint entry with icons and action that 
 -- is executed in click.
@@ -247,8 +270,13 @@ local function factory(theme_dir)
     local icon = wibox.widget.imagebox(theme_dir .. icon_wifi)
     net_widget.widget = wibox.widget { icon, text, layout = wibox.layout.align.horizontal }
 
-    if not wifi_device_exists() then
+    if ethernet_connected() then
         icon:set_image(theme_dir .. icon_ethernet)
+        return net_widget
+    end
+
+    if not wifi_device_exists() then
+        icon:set_image(theme_dir .. icon_wifi_off)
         return net_widget
     end
 

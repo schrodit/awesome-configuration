@@ -668,7 +668,7 @@ client.connect_signal("request::titlebars", function(c)
     end
 
     -- Default
-    -- buttons for the titlebar
+    -- buttons for the
     local buttons = mytable.join(
         awful.button({ }, 1, function()
             c:emit_signal("request::activate", "titlebar", {raise = true})
