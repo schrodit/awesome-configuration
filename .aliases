@@ -49,6 +49,27 @@ function kwsec() {
   kubectl ksd get secret $1 -ojson | jq -r '.stringData.kubeconfig' | pbcopy
 }
 
+########
+# Helm #
+########
+
+function migratetohelm() {
+  KIND=$1
+  NAME=$2
+  if [ -z "$RELEASE" ]; then
+    if [ -z "$3" ]; then
+      echo "RELEASE not set!"
+      return 1
+    fi 
+    RELEASE=$3
+  fi
+  NAMESPACE=$(k config view -o jsonpath="{.contexts[?(@.name == \"$(kubectl config current-context)\")].context.namespace}")
+
+  kubectl annotate $KIND $NAME meta.helm.sh/release-name=$RELEASE --overwrite
+  kubectl annotate $KIND $NAME meta.helm.sh/release-namespace=$NAMESPACE --overwrite
+  kubectl label $KIND $NAME app.kubernetes.io/managed-by=Helm
+}
+
 # ops
 alias kops="/usr/local/bin/ops-pod"
 
