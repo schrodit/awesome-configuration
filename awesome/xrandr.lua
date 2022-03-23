@@ -8,9 +8,13 @@
 local gtable  = require("gears.table")
 local spawn   = require("awful.spawn")
 local naughty = require("naughty")
+local persistentState   = require("theme.state")
 
 -- A path to a fancy icon
 local icon_path = ""
+
+local label_state_key = "xrandr.label"
+local display_state_key = "xrandr.display"
 
 -- Get active outputs
 local function outputs()
@@ -99,8 +103,11 @@ local state = { cid = nil }
 local function naughty_destroy_callback(reason)
   if reason == naughty.notificationClosedReason.expired or
      reason == naughty.notificationClosedReason.dismissedByUser then
+    local label = state.index and state.menu[state.index - 1][1]
     local action = state.index and state.menu[state.index - 1][2]
     if action then
+      persistentState:set(label_state_key, label)
+      persistentState:set(display_state_key, action)
       spawn(action, false)
       state.index = nil
     end
@@ -133,9 +140,22 @@ local function xrandr()
                                 destroy = naughty_destroy_callback}).id
 end
 
+local function apply_last_display()
+   local label = persistentState:get(label_state_key)
+   local action = persistentState:get(display_state_key)
+   naughty.notify({  text = label,
+                     icon = icon_path,
+                     timeout = 4,
+                     screen = mouse.screen,
+                     replaces_id = state.cid,
+                     destroy = naughty_destroy_callback})
+   spawn(action, false)
+end
+
 return {
    outputs = outputs,
    arrange = arrange,
    menu = menu,
-   xrandr = xrandr
+   xrandr = xrandr,
+   apply_last_display = apply_last_display
 }
