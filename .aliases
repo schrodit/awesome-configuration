@@ -4,12 +4,17 @@
 
 # needed to use aliases in watch commands
 alias watch='watch '
+alias ".."="cd .."
+
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
 
 ########################
 # CLIPBOARD Linux only #
 ########################
 alias pbcopy='xsel --clipboard --input'
 alias pbpaste='xsel --clipboard --output'
+
+fi
 
 ########
 # Arch #
@@ -83,6 +88,3 @@ function migratetohelm() {
 
 # ops
 alias kops="/usr/local/bin/ops-pod"
-
-# Commponent-cli
-alias ccli="component-cli"
