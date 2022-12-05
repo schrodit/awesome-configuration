@@ -4,6 +4,10 @@ refreshIndexAfter: 1h
 kubeconfigStores:
 - kind: filesystem
   id: default
-  kubeconfigName: "*.config"
+  kubeconfigName: "*config"
   paths:
   - "~/.kubeconfigs"
+- kind: gardener
+  config:
+    gardenerAPIKubeconfigPath: "~/.kubeconfigs/codesphere/gardener/config"
+    landscapeName: "codesphere"

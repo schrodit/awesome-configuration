@@ -16,6 +16,17 @@ alias pbpaste='xsel --clipboard --output'
 ########
 alias pacmanclean='sudo pacman -Rsn $(pacman -Qdtq)'
 
+#######
+# Git #
+#######
+function gp() {
+    if [ "master" = "$(git branch --show-current)" ]; then
+        echo "NOT pushing: current branch is: master."
+    else
+        git push origin HEAD $*
+    fi
+}
+
 ##############
 # KUBERNETES #
 ##############
