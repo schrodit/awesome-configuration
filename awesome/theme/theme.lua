@@ -9,6 +9,7 @@ local gears = require("gears")
 local lain  = require("lain")
 local awful = require("awful")
 local wibox = require("wibox")
+local beautiful     = require("beautiful")
 local dpi   = require("beautiful.xresources").apply_dpi
 
 --[[
@@ -46,7 +47,8 @@ theme.titlebar_bg_normal                        = "#3F3F3F"
 theme.titlebar_bg_focus                         = theme.bg_focus
 theme.titlebar_bg_normal                        = theme.bg_normal
 theme.titlebar_fg_focus                         = theme.fg_focus
-theme.menu_height                               = dpi(16)
+theme.menu_font                                 = "Roboto " .. dpi(11)
+theme.menu_height                               = dpi(17)
 theme.menu_width                                = dpi(140)
 theme.menu_submenu_icon                         = theme.dir .. "/icons/submenu.png"
 theme.awesome_icon                              = theme.dir .. "/icons/awesome.png"
@@ -128,85 +130,89 @@ theme.titlebar_minimize_button_focus_press      = theme.dir .. "/icons/sweet-ass
 local markup = lain.util.markup
 local separators = lain.util.separators
 
--- Taskwarrior
-local task = wibox.widget.imagebox(theme.widget_task)
-lain.widget.contrib.task.attach(task, {
-    -- do not colorize output
-    show_cmd = "task | sed -r 's/\\x1B\\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g'"
-})
-task:buttons(my_table.join(awful.button({}, 1, lain.widget.contrib.task.prompt)))
-
--- Scissors (xsel copy and paste)
-local scissors = wibox.widget.imagebox(theme.widget_scissors)
-scissors:buttons(my_table.join(awful.button({}, 1, function() awful.spawn.with_shell("xsel | xsel -i -b") end)))
-
--- MEM
-local memicon = wibox.widget.imagebox(theme.widget_mem)
-local mem = lain.widget.mem({
-    settings = function()
-        widget:set_markup(markup.font(theme.font, " " .. mem_now.used .. "MB "))
-    end
-})
-
--- CPU
-local cpuicon = wibox.widget.imagebox(theme.widget_cpu)
-local cpu = lain.widget.cpu({
-    settings = function()
-        widget:set_markup(markup.font(theme.font, " " .. cpu_now.usage .. "% "))
-    end
-})
-
--- Coretemp (lain, average)
-local temp = lain.widget.temp({
-    settings = function()
-        widget:set_markup(markup.font(theme.font, " " .. coretemp_now .. "°C "))
-    end
-})
---]]
-local tempicon = wibox.widget.imagebox(theme.widget_temp)
-
-
--- Battery
-local baticon = wibox.widget.imagebox(theme.widget_battery)
-local bat = lain.widget.bat({
-    settings = function()
-        if bat_now.status and bat_now.status ~= "N/A" then
-            if bat_now.ac_status == 1 then
-                widget:set_markup(markup.font(theme.font, " AC " .. bat_now.perc .. "% "))
-                baticon:set_image(theme.widget_ac)
-                return
-            elseif not bat_now.perc and tonumber(bat_now.perc) <= 5 then
-                baticon:set_image(theme.widget_battery_empty)
-            elseif not bat_now.perc and tonumber(bat_now.perc) <= 15 then
-                baticon:set_image(theme.widget_battery_low)
-            else
-                baticon:set_image(theme.widget_battery)
-            end
-            widget:set_markup(markup.font(theme.font, " " .. bat_now.perc .. "% "))
-        elseif bat_now.status and bat_now.status == "N/A" then
-            widget:set_markup(markup.font(theme.font, ""))
-            baticon:set_image(theme.widget_ac)
-        else
-            widget:set_markup(markup.font(theme.font, bat_now.status))
-            baticon:set_image(theme.widget_ac)
-        end
-    end
-})
-
--- Brigtness
-local brighticon = wibox.widget.imagebox(theme.widget_brightness)
--- If you use xbacklight, comment the line with "light -G" and uncomment the line bellow
--- local brightwidget = awful.widget.watch('xbacklight -get', 0.1,
-local brightwidget = awful.widget.watch('light -G', 0.1,
-    function(widget, stdout, stderr, exitreason, exitcode)
-        local brightness_level = tonumber(string.format("%.0f", stdout))
-        widget:set_markup(markup.font(theme.font, " " .. brightness_level .. "%"))
-end)
 
 -- Separators
 local arrow = separators.arrow_left
 
 function theme.at_screen_connect(s)
+
+    theme.border_width                              = dpi(2, s)
+    theme.menu_font                                 = "Roboto " .. dpi(11)
+    theme.menu_height                               = dpi(17)
+    theme.menu_width                                = dpi(140)
+
+    local font_size = 10
+    if s.geometry.width == 2560 then
+        font_size = tostring(dpi(10, s))
+    end
+    theme.font = "Roboto " .. font_size
+    --local beautiful.font = "Roboto " .. tostring(dpi(8, s))
+
+    -- Taskwarrior
+    local task = wibox.widget.imagebox(theme.widget_task)
+    lain.widget.contrib.task.attach(task, {
+        -- do not colorize output
+        show_cmd = "task | sed -r 's/\\x1B\\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g'"
+    })
+    task:buttons(my_table.join(awful.button({}, 1, lain.widget.contrib.task.prompt)))
+
+    -- Scissors (xsel copy and paste)
+    local scissors = wibox.widget.imagebox(theme.widget_scissors)
+    scissors:buttons(my_table.join(awful.button({}, 1, function() awful.spawn.with_shell("xsel | xsel -i -b") end)))
+
+    -- MEM
+    local memicon = wibox.widget.imagebox(theme.widget_mem)
+    local mem = lain.widget.mem({
+        settings = function()
+            widget:set_markup(markup.font(theme.font, " " .. mem_now.used .. "MB "))
+        end
+    })
+
+    -- CPU
+    local cpuicon = wibox.widget.imagebox(theme.widget_cpu)
+    local cpu = lain.widget.cpu({
+        settings = function()
+            widget:set_markup(markup.font(theme.font, " " .. cpu_now.usage .. "% "))
+        end
+    })
+
+
+    -- Battery
+    local baticon = wibox.widget.imagebox(theme.widget_battery)
+    local bat = lain.widget.bat({
+        settings = function()
+            if bat_now.status and bat_now.status ~= "N/A" then
+                if bat_now.ac_status == 1 then
+                    widget:set_markup(markup.font(theme.font, " AC " .. bat_now.perc .. "% "))
+                    baticon:set_image(theme.widget_ac)
+                    return
+                elseif not bat_now.perc and tonumber(bat_now.perc) <= 5 then
+                    baticon:set_image(theme.widget_battery_empty)
+                elseif not bat_now.perc and tonumber(bat_now.perc) <= 15 then
+                    baticon:set_image(theme.widget_battery_low)
+                else
+                    baticon:set_image(theme.widget_battery)
+                end
+                widget:set_markup(markup.font(theme.font, " " .. bat_now.perc .. "% "))
+            elseif bat_now.status and bat_now.status == "N/A" then
+                widget:set_markup(markup.font(theme.font, ""))
+                baticon:set_image(theme.widget_ac)
+            else
+                widget:set_markup(markup.font(theme.font, bat_now.status))
+                baticon:set_image(theme.widget_ac)
+            end
+        end
+    })
+
+    -- Coretemp (lain, average)
+    local temp = lain.widget.temp({
+        settings = function()
+            widget:set_markup(markup.font(theme.font, " " .. coretemp_now .. "°C "))
+        end
+    })
+    --]]
+    local tempicon = wibox.widget.imagebox(theme.widget_temp)
+
     -- Quake application
     s.quake = lain.util.quake({ app = awful.util.terminal })
 
@@ -244,17 +250,17 @@ function theme.at_screen_connect(s)
     }
 
     -- Create the wibox
-    s.mywibox = awful.wibar({ position = "top", screen = s, height = dpi(20), bg = theme.bg_normal, fg = theme.fg_normal })
+    s.mywibox = awful.wibar({ position = "top", screen = s, height = dpi(20, s), bg = theme.bg_normal, fg = theme.fg_normal })
 
     s.titlebar_widgets = titlebar.titlebar_widgets({theme = theme})
-    s.titlebar_widgets:add(wibox.widget { memicon, mem.widget, layout = wibox.layout.align.horizontal }, "#777E76", dpi(2))
-    s.titlebar_widgets:add(wibox.widget { cpuicon, cpu.widget, layout = wibox.layout.align.horizontal }, "#4B696D", dpi(3), dpi(4))
-    s.titlebar_widgets:add(wibox.widget { tempicon, temp.widget, layout = wibox.layout.align.horizontal }, "#4B3B51", dpi(4), dpi(4))
-    s.titlebar_widgets:add(volume_widget(theme.dir).widget, "#d4ab4c", dpi(4), dpi(7))
+    s.titlebar_widgets:add(wibox.widget { memicon, mem.widget, layout = wibox.layout.align.horizontal }, "#777E76", dpi(2, s))
+    s.titlebar_widgets:add(wibox.widget { cpuicon, cpu.widget, layout = wibox.layout.align.horizontal }, "#4B696D", dpi(3, s), dpi(4, s))
+    s.titlebar_widgets:add(wibox.widget { tempicon, temp.widget, layout = wibox.layout.align.horizontal }, "#4B3B51", dpi(4, s), dpi(4, s))
+    s.titlebar_widgets:add(volume_widget(theme.dir).widget, "#d4ab4c", dpi(4, s), dpi(7, s))
     s.titlebar_widgets:add(net_widget(theme.dir).widget, "#8DAA9A", dpi(4), dpi(7))
     s.titlebar_widgets:add(wibox.widget { baticon, bat.widget, layout = wibox.layout.align.horizontal }, "#CB755B")
-    s.titlebar_widgets:add(wibox.widget.textclock(), "#777E76", dpi(4), dpi(8))
-    s.titlebar_widgets:add(system_widget().widget, "alpha", dpi(4), dpi(8))
+    s.titlebar_widgets:add(wibox.widget.textclock(), "#777E76", dpi(4, s), dpi(8, s))
+    s.titlebar_widgets:add(system_widget().widget, "alpha", dpi(4, s), dpi(8, s))
 
     -- Add widgets to the wibox
     s.mywibox:setup {

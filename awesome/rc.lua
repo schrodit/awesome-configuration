@@ -79,15 +79,14 @@ end
 
 run_once({ "urxvtd", "unclutter -root", "$HOME/.config/awesome/autorun.sh" }) -- comma-separated entries
 
--- This function implements the XDG autostart specification
---[[
-awful.spawn.with_shell(
-    'if (xrdb -query | grep -q "^awesome\\.started:\\s*true$"); then exit; fi;' ..
-    'xrdb -merge <<< "awesome.started:true";' ..
-    -- list each of your autostart commands, followed by ; inside single quotes, followed by ..
-    'dex --environment Awesome --autostart --search-paths "$XDG_CONFIG_DIRS/autostart:$XDG_CONFIG_HOME/autostart"' -- https://github.com/jceb/dex
-)
---]]
+for s in screen do
+    if s.geometry.width == 1920 then
+        beautiful.xresources.set_dpi(85, s)
+    end
+    if s.geometry.width == 2560 then
+        beautiful.xresources.set_dpi(105, s)
+    end
+end
 
 -- }}}
 
@@ -661,6 +660,7 @@ end)
 
 -- Add a titlebar if titlebars_enabled is set to true in the rules.
 client.connect_signal("request::titlebars", function(c)
+    local s = c.screen
     -- Custom
     if beautiful.titlebar_fun then
         beautiful.titlebar_fun(c)
@@ -672,6 +672,7 @@ client.connect_signal("request::titlebars", function(c)
     local buttons = mytable.join(
         awful.button({ }, 1, function()
             c:emit_signal("request::activate", "titlebar", {raise = true})
+            naughty.notify({ text = "Screen " .. s.dpi, timeout = 30 })
             awful.mouse.client.move(c)
         end),
         awful.button({ }, 3, function()
@@ -680,7 +681,12 @@ client.connect_signal("request::titlebars", function(c)
         end)
     )
 
-    awful.titlebar(c, { font = "Roboto 8" }) : setup {
+
+    local icon_size = dpi(3, s)
+    if s.geometry.width == 2560 then
+        icon_size = dpi(5, s)
+    end
+    awful.titlebar(c, { font = "Roboto " .. tostring(dpi(8, s)) }) : setup {
         { -- Left
             buttons = buttons,
             layout  = wibox.layout.fixed.horizontal
@@ -695,11 +701,11 @@ client.connect_signal("request::titlebars", function(c)
         },
         { -- Right
             --awful.titlebar.widget.floatingbutton (c),
-            wibox.container.margin(awful.titlebar.widget.maximizedbutton(c), dpi(3), dpi(3), dpi(3), dpi(3)),
-            wibox.container.margin(awful.titlebar.widget.minimizebutton(c), dpi(3), dpi(3), dpi(3), dpi(3)),
+            wibox.container.margin(awful.titlebar.widget.maximizedbutton(c), icon_size, icon_size, icon_size, icon_size),
+            wibox.container.margin(awful.titlebar.widget.minimizebutton(c), icon_size, icon_size, icon_size, icon_size),
             --awful.titlebar.widget.stickybutton   (c),
             --awful.titlebar.widget.ontopbutton    (c),
-            wibox.container.margin(awful.titlebar.widget.closebutton(c), dpi(3), dpi(3), dpi(3), dpi(3)),
+            wibox.container.margin(awful.titlebar.widget.closebutton(c), icon_size, icon_size, icon_size, icon_size),
             layout = wibox.layout.fixed.horizontal()
         },
         layout = wibox.layout.align.horizontal
